@@ -120,15 +120,19 @@ Output JSON:
 
 async def run_agent_3_science(drug: DrugInfo) -> dict:
     ingredients = ", ".join(drug.active_ingredients)
-    prompt = f"""You are Agent 3 (Science). You are an expert pharmacologist.
-Examine active ingredients and cross-reference with therapeutic use.
+    prompt = f"""You are Agent 3 (Science). You are an expert pharmacologist and counterfeit detector.
+Examine the active ingredients and cross-reference them with the drug's stated therapeutic use and typical brand formulation.
 Active Ingredients: {ingredients}
 Intended Use: {drug.stated_therapeutic_use}
+
+CRITICAL COUNTERFEIT CHECK:
+If the stated active ingredients are complete nonsense (e.g. "trash", "chalk"), do not match the typical formulation of the brand, or do not match the intended use at all, THIS IS A MASSIVE RED FLAG THAT THE DRUG IS A COUNTERFEIT. Do NOT just say "it is not for the stated use" — explicitly conclude that the physical packaging is likely fake because a real drug of this type would never contain these ingredients.
+
 Output JSON:
 {{
   "pharmacologically_consistent": true/false,
   "inconsistencies_found": ["list"],
-  "analysis": "brief reasoning"
+  "analysis": "Brief reasoning. If nonsense or heavily mismatched, explicitly state it is likely a fake/counterfeit."
 }}"""
     res = await groq_client.chat.completions.create(
         model=AGENT_3_MODEL, messages=[{"role": "system", "content": prompt}],
@@ -206,7 +210,7 @@ Agent 4 — Pharmacovigilance (OpenFDA side effects & interactions): {json.dumps
 REASONING GUIDANCE:
 - If Agent 1 shows no registry match for any drug, that is strong evidence it may be unregistered/fake.
 - If Agent 2 found active counterfeit alerts or recalls, that is a serious safety signal.
-- If Agent 3 found pharmacological inconsistency, that means the ingredients don't match the claimed use.
+- If Agent 3 found pharmacological inconsistency (e.g. ingredients are nonsense, don't match the brand, or don't match the disease), DO NOT just advise the patient they are taking the wrong medicine. This means the physical box they are holding has fake text printed on it! You MUST treat this as a CRITICAL FAILURE / FAKE.
 - Weight all three signals together to decide `risk_level` and `confidence_score_percentage`.
 - `confidence_score_percentage` = your assessed probability (0–100) that this drug is genuine and appropriate.
 - `risk_level` must be exactly one of: "VERIFIED RECORD", "SUSPICIOUS / HIGH RISK", or "CRITICAL FAILURE / FAKE".
