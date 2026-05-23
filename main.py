@@ -39,7 +39,7 @@ AGENT_2_MODEL = "llama-3.3-70b-versatile"
 AGENT_3_MODEL = "llama-3.3-70b-versatile"
 AGENT_4_MODEL = "llama-3.3-70b-versatile"
 AGENT_5_MODEL = "llama-3.3-70b-versatile"
-CHAT_MODEL = "llama-3.3-70b-versatile"
+CHAT_MODEL = "llama-3.1-8b-instant"
 
 class DrugInfo(BaseModel):
     brand_name: str
