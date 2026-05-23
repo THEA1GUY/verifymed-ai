@@ -2,7 +2,7 @@
    VERIFYMED — App Logic
    ══════════════════════════════════════════ */
 
-const API_BASE = 'http://localhost:8000';
+const API_BASE = 'https://verifymed-ai.onrender.com';
 
 // ── Screen Manager ────────────────────────
 const screens = {
