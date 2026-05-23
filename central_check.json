@@ -1,0 +1,14 @@
+{
+  "node": {
+    "installed": true,
+    "version": "v24.16.0"
+  },
+  "pnpm": {
+    "installed": true,
+    "version": "10.13.1"
+  },
+  "repository": {
+    "cloned": true,
+    "path": "C:\\Users\\Asus\\.gemini\\antigravity-ide\\scratch\\open-design"
+  }
+}

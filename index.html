@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VerifyMed — AI Drug Authentication</title>
+  <meta name="description" content="VerifyMed uses 5 AI agents to verify authenticity and check pharmacovigilance." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--  SCREEN 1: HOME                             -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div id="screen-home" class="screen active">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <header class="app-header">
+      <div class="logo">
+        <span class="logo-dot"></span>
+        <span class="logo-text">VerifyMed</span>
+      </div>
+      <div class="header-badge">LIVE</div>
+    </header>
+
+    <main class="home-main">
+      <div class="hero-text">
+        <h1 class="hero-title">Verify Any Drug<br /><span class="gradient-text">in Seconds.</span></h1>
+        <p class="hero-subtitle">5 AI agents scan global databases, check registries, and analyze drug interactions — instantly.</p>
+      </div>
+
+      <div class="scan-zone" id="scan-zone">
+        <div class="scan-ring ring-1"></div>
+        <div class="scan-ring ring-2"></div>
+        <div class="scan-ring ring-3"></div>
+        <div class="scan-hex">
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+            <path d="M32 4L58 18V46L32 60L6 46V18L32 4Z" stroke="url(#scanGrad)" stroke-width="2" fill="none"/>
+            <path d="M32 16L48 25V43L32 52L16 43V25L32 16Z" fill="url(#scanFill)" opacity="0.15"/>
+            <line x1="20" y1="32" x2="44" y2="32" stroke="#00E676" stroke-width="1.5" stroke-linecap="round" class="scan-laser"/>
+            <defs>
+              <linearGradient id="scanGrad" x1="6" y1="4" x2="58" y2="60">
+                <stop offset="0%" stop-color="#00E676"/>
+                <stop offset="100%" stop-color="#00BFA5"/>
+              </linearGradient>
+              <linearGradient id="scanFill" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#00E676"/>
+                <stop offset="100%" stop-color="#00BFA5"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="scan-label">Start Verification</div>
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn btn-primary" id="btn-scan-barcode">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="7" y1="7" x2="7" y2="17"/><line x1="11" y1="7" x2="11" y2="17"/><line x1="13" y1="7" x2="13" y2="17"/><line x1="17" y1="7" x2="17" y2="17"/></svg>
+          Scan Drug Barcode
+        </button>
+      </div>
+
+      <p class="powered-by">Powered by <span>5 AI Agents</span> on Groq</p>
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--  SCREEN 2: BARCODE SCANNER                  -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div id="screen-scanner" class="screen">
+    <div class="bg-orb orb-1"></div>
+
+    <header class="app-header">
+      <button class="btn-back" id="back-from-scanner">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="logo">
+        <span class="logo-dot"></span>
+        <span class="logo-text">Scan Barcode</span>
+      </div>
+      <div style="width:40px"></div>
+    </header>
+
+    <main class="scanner-main">
+      <div class="scanner-container">
+        <div id="reader" style="width: 100%; max-width: 400px; border-radius: 12px; overflow: hidden; margin: 0 auto; border: 1px solid rgba(255,255,255,0.1);"></div>
+      </div>
+      <p style="text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-2);">
+        Point your camera at the 1D Barcode or 2D DataMatrix on the drug packaging.
+      </p>
+      
+      <button class="btn btn-ghost btn-full" id="btn-no-barcode" style="margin-top: 24px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        I don't have a barcode
+      </button>
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--  SCREEN 3: CHAT INTAKE                      -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div id="screen-chat" class="screen">
+    <div class="bg-orb orb-1"></div>
+
+    <header class="app-header">
+      <button class="btn-back" id="back-from-chat">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="logo">
+        <span class="logo-dot"></span>
+        <span class="logo-text">Intake Assistant</span>
+      </div>
+      <div style="width:40px"></div>
+    </header>
+
+    <main class="chat-main">
+      <div class="chat-history" id="chat-history">
+        <!-- Messages go here -->
+      </div>
+      <div class="chat-input-area">
+        <form id="chat-form" class="chat-form">
+          <input type="text" id="chat-input" class="chat-input" placeholder="Type your message..." autocomplete="off" />
+          <div class="chat-actions">
+            <label class="btn-chat-icon" for="file-input">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </label>
+            <input type="file" id="file-input" accept="image/*" style="display:none" />
+            <button type="submit" class="btn-chat-icon primary">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--  SCREEN 3: PROCESSING                       -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div id="screen-processing" class="screen">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+
+    <main class="processing-main">
+      <div class="processing-logo">
+        <span class="logo-dot logo-dot-lg"></span>
+        <span class="logo-text">VerifyMed</span>
+      </div>
+      <p class="processing-headline">Analyzing Drug Safety</p>
+
+      <div class="agent-pipeline">
+        <div class="agent-card" id="agent-stage0" data-state="idle">
+          <div class="agent-icon">👁</div>
+          <div class="agent-info">
+            <div class="agent-name">Stage 0 — OCR Gateway</div>
+            <div class="agent-status">Reading package data...</div>
+          </div>
+          <div class="agent-indicator"></div>
+        </div>
+        <div class="pipeline-connector"></div>
+        <div class="agent-card" id="agent-1" data-state="idle">
+          <div class="agent-icon">🔎</div>
+          <div class="agent-info">
+            <div class="agent-name">Agent 1 — Identity</div>
+            <div class="agent-status">Checking NAFDAC & WHO registry...</div>
+          </div>
+          <div class="agent-indicator"></div>
+        </div>
+        <div class="pipeline-connector"></div>
+        <div class="agent-card" id="agent-2" data-state="idle">
+          <div class="agent-icon">🌐</div>
+          <div class="agent-info">
+            <div class="agent-name">Agent 2 — Intelligence</div>
+            <div class="agent-status">Scanning global alerts & recalls...</div>
+          </div>
+          <div class="agent-indicator"></div>
+        </div>
+        <div class="pipeline-connector"></div>
+        <div class="agent-card" id="agent-3" data-state="idle">
+          <div class="agent-icon">🧬</div>
+          <div class="agent-info">
+            <div class="agent-name">Agent 3 — Science</div>
+            <div class="agent-status">Verifying pharmacology...</div>
+          </div>
+          <div class="agent-indicator"></div>
+        </div>
+        <div class="pipeline-connector"></div>
+        <div class="agent-card" id="agent-4" data-state="idle">
+          <div class="agent-icon">🛡️</div>
+          <div class="agent-info">
+            <div class="agent-name">Agent 4 — Pharmacovigilance</div>
+            <div class="agent-status">Checking OpenFDA for side effects...</div>
+          </div>
+          <div class="agent-indicator"></div>
+        </div>
+        <div class="pipeline-connector"></div>
+        <div class="agent-card" id="agent-5" data-state="idle">
+          <div class="agent-icon">⚖️</div>
+          <div class="agent-info">
+            <div class="agent-name">Agent 5 — Safety Advisor</div>
+            <div class="agent-status">Building your report...</div>
+          </div>
+          <div class="agent-indicator"></div>
+        </div>
+      </div>
+
+      <div class="processing-note">Results in under 30 seconds</div>
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--  SCREEN 4: VERDICT                          -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div id="screen-verdict" class="screen">
+    <div class="bg-orb orb-verdict" id="orb-verdict"></div>
+
+    <header class="app-header">
+      <button class="btn-back" id="back-from-verdict">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="logo">
+        <span class="logo-dot"></span>
+        <span class="logo-text">VerifyMed</span>
+      </div>
+      <div style="width:40px"></div>
+    </header>
+
+    <main class="verdict-main">
+      <!-- Risk Badge -->
+      <div class="risk-badge-wrapper">
+        <div class="risk-badge" id="risk-badge">
+          <span class="risk-icon" id="risk-icon">✦</span>
+          <span class="risk-label" id="risk-label">—</span>
+        </div>
+      </div>
+
+      <!-- Confidence Gauge -->
+      <div class="gauge-wrapper">
+        <svg class="gauge-svg" viewBox="0 0 200 120" width="200" height="120">
+          <path class="gauge-track" d="M20,100 A80,80 0 0,1 180,100" stroke="#1A2035" stroke-width="14" fill="none" stroke-linecap="round"/>
+          <path class="gauge-fill" id="gauge-fill" d="M20,100 A80,80 0 0,1 180,100" stroke="url(#gaugeGrad)" stroke-width="14" fill="none" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
+          <text x="100" y="92" text-anchor="middle" class="gauge-number" id="gauge-number">0%</text>
+          <text x="100" y="112" text-anchor="middle" class="gauge-label-text">Confidence Score</text>
+          <defs>
+            <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#FF1744"/>
+              <stop offset="50%" stop-color="#FFB300"/>
+              <stop offset="100%" stop-color="#00E676"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+
+      <!-- Patient Summary -->
+      <div class="verdict-card">
+        <div class="verdict-card-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E676" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Safety Summary
+        </div>
+        <p class="verdict-summary" id="verdict-summary">—</p>
+      </div>
+
+      <!-- Side Effects & Interactions -->
+      <div class="verdict-card" style="border-color: rgba(255, 179, 0, 0.4);">
+        <div class="verdict-card-label" style="color: #FFB300;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FFB300" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Side Effects & Interactions
+        </div>
+        <p class="verdict-summary" id="side-effects-summary">—</p>
+      </div>
+
+      <!-- Actionable Steps -->
+      <div class="verdict-card">
+        <div class="verdict-card-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E676" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          What To Do Now
+        </div>
+        <ol class="action-list" id="action-list"></ol>
+      </div>
+
+      <!-- What to check on pack -->
+      <div class="verdict-card">
+        <div class="verdict-card-label">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00E676" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          Check On The Pack
+        </div>
+        <p class="check-pack-text" id="check-pack-text">—</p>
+      </div>
+
+      <!-- Who to Contact -->
+      <div class="contact-block" id="contact-block">
+        <div class="contact-label">Need Help? Contact</div>
+        <div class="contact-value" id="contact-value">—</div>
+        
+        <a class="btn btn-primary btn-full contact-btn" id="mas-btn" href="sms:38120" style="margin-bottom: 12px; background: #fff; color: #000;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Verify MAS PIN via SMS (38120)
+        </a>
+
+        <a class="btn btn-primary btn-full contact-btn" id="nafdac-btn" href="tel:08001623322">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5 19.79 19.79 0 0 1 1.6 4.87 2 2 0 0 1 3.58 2.69h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.09a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          Call NAFDAC Hotline
+        </a>
+      </div>
+
+      <button class="btn btn-ghost btn-full" id="btn-scan-again">Verify Another Drug</button>
+    </main>
+  </div>
+
+  <div id="barcode-modal" class="modal">
+    <div class="modal-content">
+      <h3>No Barcode Found?</h3>
+      <p>Being unable to scan a barcode is worrisome. Many counterfeit drugs lack proper 1D or 2D barcodes. Without a barcode, our AI must rely solely on the text you provide, which could affect the accuracy of the results.</p>
+      <div class="modal-actions">
+        <button class="btn btn-primary btn-full" id="btn-modal-proceed" style="background: var(--warning); color: #000; box-shadow: 0 4px 15px rgba(255, 179, 0, 0.3);">I understand, proceed anyway</button>
+        <button class="btn btn-ghost btn-full" id="btn-modal-cancel">Cancel and try scanning</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

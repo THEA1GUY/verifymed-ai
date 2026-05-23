@@ -1,0 +1,5 @@
+{
+  "success": true,
+  "message": "Daemon start command executed successfully. Port checking may take a moment.",
+  "details": "> open-design@0.7.0 tools-dev C:\\Users\\Asus\\.gemini\\antigravity-ide\\scratch\\open-design\n> pnpm exec tools-dev \"start\"\n\ntools-dev start\n- daemon: started \u00c2\u00b7 running \u00c2\u00b7 http://127.0.0.1:53524 \u00c2\u00b7 pid 19288\n  log: C:\\Users\\Asus\\.gemini\\antigravity-ide\\scratch\\open-design\\.tmp\\tools-dev\\default\\logs\\daemon\\latest.log\n- web: started \u00c2\u00b7 running \u00c2\u00b7 http://127.0.0.1:53530 \u00c2\u00b7 pid 13432\n  log: C:\\Users\\Asus\\.gemini\\antigravity-ide\\scratch\\open-design\\.tmp\\tools-dev\\default\\logs\\web\\latest.log\n- desktop: started \u00c2\u00b7 running \u00c2\u00b7 http://127.0.0.1:53530 \u00c2\u00b7 pid 5820 \u00c2\u00b7 title \"Open Design\" \u00c2\u00b7 window visible\n  log: C:\\Users\\Asus\\.gemini\\antigravity-ide\\scratch\\open-design\\.tmp\\tools-dev\\default\\logs\\desktop\\latest.log"
+}
