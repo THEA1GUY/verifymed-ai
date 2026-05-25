@@ -146,7 +146,6 @@ document.getElementById('btn-modal-cancel').addEventListener('click', () => {
   barcodeModal.classList.remove('active');
 });
 document.getElementById('btn-modal-proceed').addEventListener('click', () => {
-document.getElementById('btn-no-barcode').addEventListener('click', () => {
   vibrate([100, 50, 100]);
   barcodeModal.classList.remove('active');
   if(html5QrcodeScanner) html5QrcodeScanner.clear();
