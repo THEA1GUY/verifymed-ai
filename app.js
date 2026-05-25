@@ -13,15 +13,15 @@ function vibrate(pattern) {
 // True on phones/tablets (touch-only devices)
 const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
-// ── Visual Viewport — Keyboard-aware chat ─
+// ── Visual Viewport — Keyboard-aware form ─
 // On iOS/Android, when the keyboard opens the visual viewport shrinks.
-// We scroll the chat history to the bottom so the latest message stays visible.
+// Scroll the form so the focused input is still visible.
 if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', () => {
-    const chatScreen = document.getElementById('screen-chat');
-    if (chatScreen && chatScreen.classList.contains('active')) {
-      const history = document.getElementById('chat-history');
-      if (history) history.scrollTop = history.scrollHeight;
+    const formScreen = document.getElementById('screen-form');
+    if (formScreen && formScreen.classList.contains('active')) {
+      const focused = document.activeElement;
+      if (focused) focused.scrollIntoView({ block: 'center', behavior: 'smooth' });
     }
   });
 }
@@ -30,7 +30,7 @@ if (window.visualViewport) {
 const screens = {
   home:       document.getElementById('screen-home'),
   scanner:    document.getElementById('screen-scanner'),
-  chat:       document.getElementById('screen-chat'),
+  form:       document.getElementById('screen-form'),
   processing: document.getElementById('screen-processing'),
   verdict:    document.getElementById('screen-verdict'),
 };
@@ -357,8 +357,8 @@ async function runVerification(payload, imageFile) {
     } catch {
       setAgentState('agent-stage0', 'warn');
       await delay(800);
-      showScreen('chat');
-      showToast('Image scan failed! Please chat with the assistant.');
+      showScreen('form');
+      showToast('Image scan failed. Please fill in the details manually.');
       return;
     }
   } else {
@@ -402,7 +402,7 @@ async function runVerification(payload, imageFile) {
       if (attempts >= maxAttempts) {
         vibrate([300]); // Long warning pulse
         showToast('Network error. Could not connect to VerifyMed API.');
-        showScreen('chat');
+        showScreen('form');
         return;
       }
       // Wait before retrying (exponential backoff: 1s, 2s)
