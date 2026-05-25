@@ -10,8 +10,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
+  <!-- Screen-wide threat/success overlay -->
+  <div id="screen-overlay" class="screen-overlay"></div>
 
   <!-- ═══════════════════════════════════════════ -->
   <!--  SCREEN 1: HOME                             -->
@@ -154,6 +158,15 @@
       <p class="processing-headline">Analyzing Drug Safety</p>
 
       <div class="agent-pipeline">
+        <div class="agent-card" id="agent-preflight" data-state="idle">
+          <div class="agent-icon">⚡</div>
+          <div class="agent-info">
+            <div class="agent-name">Pre-flight Validation</div>
+            <div class="agent-status">Running pre-flight checks...</div>
+          </div>
+          <div class="agent-indicator"></div>
+        </div>
+        <div class="pipeline-connector"></div>
         <div class="agent-card" id="agent-stage0" data-state="idle">
           <div class="agent-icon">👁</div>
           <div class="agent-info">
@@ -256,6 +269,15 @@
         </svg>
       </div>
 
+      <!-- Suspicion Score Bar -->
+      <div class="suspicion-score-card">
+        <div class="suspicion-score-label">Weighted Suspicion Index</div>
+        <div class="suspicion-bar-outer">
+          <div class="suspicion-bar-fill" id="suspicion-bar-fill" style="width: 0%;"></div>
+        </div>
+        <div class="suspicion-score-value" id="suspicion-score-value">0%</div>
+      </div>
+
       <!-- Patient Summary -->
       <div class="verdict-card">
         <div class="verdict-card-label">
@@ -263,6 +285,20 @@
           Safety Summary
         </div>
         <p class="verdict-summary" id="verdict-summary">—</p>
+      </div>
+
+      <!-- Investigator's Red-Team Concerns -->
+      <div class="verdict-card collapsible-card" id="investigators-concerns-card">
+        <details>
+          <summary class="verdict-card-label" style="cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none;">
+            <span style="display: flex; align-items: center; gap: 8px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF1744" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Adversarial Red-Team Notes
+            </span>
+            <span class="collapse-icon">▼</span>
+          </summary>
+          <p class="verdict-summary monospace-font" id="investigators-concerns-content" style="margin-top: 12px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 12px; font-size: 13px; color: var(--text-2); white-space: pre-wrap; font-family: monospace;">—</p>
+        </details>
       </div>
 
       <!-- Side Effects & Interactions -->
@@ -308,7 +344,13 @@
         </a>
       </div>
 
-      <button class="btn btn-ghost btn-full" id="btn-scan-again">Verify Another Drug</button>
+      <div class="action-buttons" style="margin-top: 12px; max-width: 100%;">
+        <button class="btn btn-primary btn-full" id="btn-share-verdict" style="margin-bottom: 8px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Share Verdict Receipt
+        </button>
+        <button class="btn btn-ghost btn-full" id="btn-scan-again">Verify Another Drug</button>
+      </div>
     </main>
   </div>
 
