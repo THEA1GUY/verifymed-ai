@@ -129,8 +129,7 @@ function onScanSuccess(decodedText, decodedResult) {
     printed_manufacturer: null
   };
   
-  showScreen('chat');
-  initChat(decodedText);
+  showScreen('form');
 }
 
 function onScanFailure(error) {
@@ -147,11 +146,11 @@ document.getElementById('btn-modal-cancel').addEventListener('click', () => {
   barcodeModal.classList.remove('active');
 });
 document.getElementById('btn-modal-proceed').addEventListener('click', () => {
+document.getElementById('btn-no-barcode').addEventListener('click', () => {
   vibrate([100, 50, 100]);
   barcodeModal.classList.remove('active');
   if(html5QrcodeScanner) html5QrcodeScanner.clear();
-  showScreen('chat');
-  initChat("NO_BARCODE_FOUND");
+  showScreen('form');
 });
 
 document.getElementById('back-from-scanner').addEventListener('click', () => {
@@ -159,7 +158,7 @@ document.getElementById('back-from-scanner').addEventListener('click', () => {
   if(html5QrcodeScanner) html5QrcodeScanner.clear();
   showScreen('home');
 });
-document.getElementById('back-from-chat').addEventListener('click', () => { vibrate(50); showScreen('home'); });
+document.getElementById('back-from-form').addEventListener('click', () => { vibrate(50); showScreen('home'); });
 document.getElementById('back-from-verdict').addEventListener('click', () => {
   vibrate(50);
   document.getElementById('screen-overlay').className = 'screen-overlay'; // Reset overlay
@@ -171,92 +170,41 @@ document.getElementById('btn-scan-again').addEventListener('click', () => {
   showScreen('home');
 });
 
-// ── Chat Intake Logic ─────────────────────
-let chatMessages = [];
-const chatHistory = document.getElementById('chat-history');
-const chatInput = document.getElementById('chat-input');
-const chatForm = document.getElementById('chat-form');
-
-function initChat(barcodeValue = null) {
-  chatMessages = [];
-  chatHistory.innerHTML = '';
-  
-  if (barcodeValue === "NO_BARCODE_FOUND") {
-    addMessage("system", "System Note: User bypassed barcode scanning. This is a potential risk indicator.");
-    addMessage("assistant", "⚠️ I see you don't have a barcode. Please proceed with extreme caution.\n\nTo continue verification using just the text on the box, what are your symptoms and what is the name of the medication?");
-  } else if (barcodeValue) {
-    addMessage("system", `System Note: Barcode scanned: ${barcodeValue}`);
-    addMessage("assistant", `I successfully read the barcode: **${barcodeValue}**. \n\nTo continue verification, what are your symptoms and what is the name of the medication?`);
-  } else {
-    addMessage("assistant", "Hello! I'm your VerifyMed Intake Assistant. To get started, what symptoms are you experiencing, and what medication(s) were you given?");
-  }
-}
-
-function addMessage(role, text) {
-  if (role !== "system") {
-    chatMessages.push({ role, content: text });
-    const div = document.createElement('div');
-    div.className = `chat-msg msg-${role}`;
-    div.textContent = text;
-    chatHistory.appendChild(div);
-    chatHistory.scrollTop = chatHistory.scrollHeight;
-  }
-}
-
-chatForm.addEventListener('submit', async (e) => {
+// ── Intake Form Logic ─────────────────────
+const verifyForm = document.getElementById('verify-form');
+verifyForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const text = chatInput.value.trim();
-  if (!text) return;
-  chatInput.value = '';
-  
-  addMessage("user", text);
+  vibrate(50);
 
-  // Show typing indicator
-  const typingDiv = document.createElement('div');
-  typingDiv.className = 'chat-msg msg-assistant typing-indicator';
-  typingDiv.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
-  chatHistory.appendChild(typingDiv);
-  chatHistory.scrollTop = chatHistory.scrollHeight;
+  const brand = document.getElementById('f-brand').value.trim();
+  const manufacturer = document.getElementById('f-manufacturer').value.trim();
+  const batch = document.getElementById('f-batch').value.trim();
+  const ingredientsStr = document.getElementById('f-ingredients').value.trim();
+  const symptoms = document.getElementById('f-symptoms').value.trim();
 
-  try {
-    const res = await fetch(`${API_BASE}/chat_intake`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: chatMessages })
-    });
-    
-    // Remove typing indicator
-    if (typingDiv.parentNode) typingDiv.parentNode.removeChild(typingDiv);
-    
-    const data = await res.json();
-    
-    if (data.reply) {
-      addMessage("assistant", data.reply);
-    }
-    
-    if (data.status === "complete" && data.extracted_data) {
-      // Transition to verification
-      const drug = data.extracted_data.drugs?.[0];
-      if (drug) {
-        if (!window._preflight) {
-          window._preflight = {
-            barcode_raw: null,
-            barcode_gtin: null,
-            barcode_batch: null,
-            barcode_expiry: null
-          };
-        }
-        window._preflight.printed_batch = drug.batch_number || null;
-        window._preflight.printed_manufacturer = drug.manufacturer || null;
-      }
-      await delay(1000);
-      runVerification(data.extracted_data, null);
-    }
-  } catch (err) {
-    console.error(err);
-    addMessage("assistant", "Sorry, I'm having trouble connecting to the server.");
+  if (!window._preflight) {
+    window._preflight = {
+      barcode_raw: null, barcode_gtin: null, barcode_batch: null, barcode_expiry: null
+    };
   }
+  window._preflight.printed_batch = batch;
+  window._preflight.printed_manufacturer = manufacturer;
+
+  const payload = {
+    patient_symptoms: symptoms || "None reported",
+    drugs: [{
+      brand_name: brand,
+      manufacturer: manufacturer,
+      batch_number: batch,
+      active_ingredients: ingredientsStr.split(',').map(s => s.trim()).filter(Boolean),
+      stated_therapeutic_use: "Unknown"
+    }],
+    preflight: window._preflight
+  };
+
+  runVerification(payload, null);
 });
+
 
 // ── File / Camera Input ───────────────────
 document.getElementById('file-input').addEventListener('change', async (e) => {

@@ -106,40 +106,66 @@
   </div>
 
   <!-- ═══════════════════════════════════════════ -->
-  <!--  SCREEN 3: CHAT INTAKE                      -->
+  <!--  SCREEN 3: INTAKE FORM                      -->
   <!-- ═══════════════════════════════════════════ -->
-  <div id="screen-chat" class="screen">
+  <div id="screen-form" class="screen">
     <div class="bg-orb orb-1"></div>
 
     <header class="app-header">
-      <button class="btn-back" id="back-from-chat">
+      <button class="btn-back" id="back-from-form">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
       <div class="logo">
         <span class="logo-dot"></span>
-        <span class="logo-text">Intake Assistant</span>
+        <span class="logo-text">Drug Details</span>
       </div>
       <div style="width:40px"></div>
     </header>
 
-    <main class="chat-main">
-      <div class="chat-history" id="chat-history">
-        <!-- Messages go here -->
+    <main class="form-main">
+      <div class="form-title">Verify Details</div>
+      <p class="form-subtitle">Please enter the details exactly as printed on the box.</p>
+
+      <form id="verify-form" class="verify-form">
+        <div class="form-group">
+          <label class="form-label">Brand Name</label>
+          <input type="text" id="f-brand" class="form-input" placeholder="e.g., Coartem" required />
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Manufacturer</label>
+          <input type="text" id="f-manufacturer" class="form-input" placeholder="e.g., Novartis" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Batch Number</label>
+          <input type="text" id="f-batch" class="form-input" placeholder="e.g., F2014" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Active Ingredients</label>
+          <input type="text" id="f-ingredients" class="form-input" placeholder="e.g., Artemether 20mg" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Patient Symptoms (Optional)</label>
+          <textarea id="f-symptoms" class="form-input" placeholder="Describe symptoms for safety check" rows="2"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" style="margin-top: 12px;">Run Verification</button>
+      </form>
+
+      <div style="display: flex; align-items: center; margin: 24px 0;">
+        <hr style="flex: 1; border: none; border-top: 1px solid rgba(255,255,255,0.1);" />
+        <span style="padding: 0 16px; font-size: 12px; color: var(--text-3); text-transform: uppercase; font-weight: 700;">OR</span>
+        <hr style="flex: 1; border: none; border-top: 1px solid rgba(255,255,255,0.1);" />
       </div>
-      <div class="chat-input-area">
-        <form id="chat-form" class="chat-form">
-          <input type="text" id="chat-input" class="chat-input" placeholder="Type your message..." autocomplete="off" />
-          <div class="chat-actions">
-            <label class="btn-chat-icon" for="file-input">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            </label>
-            <input type="file" id="file-input" accept="image/*" style="display:none" />
-            <button type="submit" class="btn-chat-icon primary">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-            </button>
-          </div>
-        </form>
-      </div>
+
+      <label class="btn btn-ghost btn-full" for="file-input" style="cursor: pointer;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        Upload Photo of Box (Auto-Fill)
+      </label>
+      <input type="file" id="file-input" accept="image/*" style="display:none" />
     </main>
   </div>
 
