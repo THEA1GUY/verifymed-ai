@@ -34,12 +34,16 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
-  height: 100%;
+  /* Use dynamic viewport height so Safari's URL bar is handled correctly */
+  height: 100dvh;
+  min-height: 100dvh;
   background: var(--bg);
   color: var(--text);
   font-family: 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   overflow: hidden;
+  /* Suppress iOS blue tap flash on ALL interactive elements */
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ── Screens ─────────────────────────────── */
@@ -48,7 +52,9 @@ html, body {
   inset: 0;
   display: flex;
   flex-direction: column;
+  /* Native-feeling momentum scrolling on iOS */
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   opacity: 0;
   pointer-events: none;
   transform: translateX(30px);
@@ -851,4 +857,168 @@ html, body {
   transition: transform 0.2s ease;
   font-size: 10px;
   color: var(--text-3);
+}
+
+/* ══════════════════════════════════════════
+   MOBILE OPTIMIZATIONS
+   ══════════════════════════════════════════ */
+
+/* ── Safe Area Padding (iPhone notch & home bar) ── */
+.app-header {
+  padding-top: max(20px, env(safe-area-inset-top));
+  padding-left:  max(24px, env(safe-area-inset-left));
+  padding-right: max(24px, env(safe-area-inset-right));
+}
+
+.home-main,
+.form-main,
+.processing-main {
+  padding-bottom: max(40px, env(safe-area-inset-bottom));
+}
+
+.verdict-main {
+  padding-bottom: max(48px, calc(env(safe-area-inset-bottom) + 16px));
+}
+
+/* Chat input docks above the home bar */
+.chat-input-area {
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+/* ── Minimum Touch Targets (44px per Apple HIG) ── */
+.btn-back {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+}
+.btn-chat-icon {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* ── Small Phone Adjustments (≤ 390px) ── */
+@media (max-width: 390px) {
+  .hero-title {
+    font-size: 26px;
+    letter-spacing: -0.5px;
+  }
+  .hero-subtitle {
+    font-size: 13px;
+  }
+  .scan-zone {
+    width: 150px;
+    height: 150px;
+  }
+  .btn {
+    font-size: 14px;
+    padding: 14px 20px;
+  }
+  .agent-card {
+    padding: 12px 12px;
+    gap: 10px;
+  }
+  .agent-icon {
+    font-size: 16px;
+    width: 28px;
+  }
+  .agent-name {
+    font-size: 12px;
+  }
+  .agent-status {
+    font-size: 10px;
+  }
+  .gauge-svg {
+    width: 160px;
+    height: 96px;
+  }
+  .gauge-number {
+    font-size: 22px;
+  }
+  .verdict-main {
+    padding: 12px 16px max(48px, calc(env(safe-area-inset-bottom) + 16px));
+    gap: 12px;
+  }
+  .verdict-card {
+    padding: 14px;
+  }
+  .home-main {
+    padding: 16px 20px max(40px, env(safe-area-inset-bottom));
+    gap: 24px;
+  }
+  .chat-input {
+    font-size: 16px; /* Prevent iOS auto-zoom on input focus */
+  }
+}
+
+/* ── Standard Mobile (≤ 480px) ── */
+@media (max-width: 480px) {
+  /* Prevent iOS auto-zoom when focusing inputs */
+  .chat-input,
+  .form-input {
+    font-size: 16px;
+  }
+
+  /* Scanner camera fills the screen better */
+  .scanner-main {
+    padding: 16px;
+  }
+  #reader {
+    max-width: 100% !important;
+  }
+
+  /* Processing cards fit narrow screens */
+  .agent-pipeline {
+    max-width: 100%;
+  }
+
+  /* Risk badge wraps gracefully if label is long */
+  .risk-badge {
+    font-size: 12px;
+    padding: 10px 18px;
+    flex-wrap: wrap;
+    text-align: center;
+  }
+
+  /* Contact buttons are comfortably tappable */
+  .contact-btn {
+    padding: 16px;
+    font-size: 14px;
+  }
+
+  /* Reduce orb blur cost on mobile GPUs */
+  .bg-orb {
+    filter: blur(50px);
+  }
+}
+
+/* ── Keyboard-Aware Chat Screen ── */
+/* When the keyboard opens on iOS, the chat input stays visible */
+#screen-chat {
+  /* Let the chat screen resize with the visual viewport */
+  height: 100dvh;
+}
+.chat-main {
+  min-height: 0; /* Allows flex children to shrink with keyboard */
+}
+.chat-history {
+  /* Ensure the history shrinks and remains scrollable when keyboard is up */
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Disable VanillaTilt on Touch Devices ── */
+/* Tilt is a pointer/mouse effect — pointless and wasteful on phones */
+@media (hover: none) and (pointer: coarse) {
+  .agent-card,
+  .verdict-card,
+  .suspicion-score-card,
+  .contact-block {
+    transform: none !important;
+    transition: border-color var(--transition), background var(--transition);
+  }
 }

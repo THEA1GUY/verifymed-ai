@@ -6,10 +6,24 @@ const API_BASE = 'https://verifymed-ai.onrender.com';
 
 // ── Haptics ───────────────────────────────
 function vibrate(pattern) {
-  if (navigator.vibrate) {
-    // Only vibrate if supported (e.g. mobile devices)
-    navigator.vibrate(pattern);
-  }
+  if (navigator.vibrate) navigator.vibrate(pattern);
+}
+
+// ── Touch detection ───────────────────────
+// True on phones/tablets (touch-only devices)
+const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
+// ── Visual Viewport — Keyboard-aware chat ─
+// On iOS/Android, when the keyboard opens the visual viewport shrinks.
+// We scroll the chat history to the bottom so the latest message stays visible.
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    const chatScreen = document.getElementById('screen-chat');
+    if (chatScreen && chatScreen.classList.contains('active')) {
+      const history = document.getElementById('chat-history');
+      if (history) history.scrollTop = history.scrollHeight;
+    }
+  });
 }
 
 // ── Screen Manager ────────────────────────
@@ -32,8 +46,8 @@ function showScreen(name) {
     }
   });
 
-  // Initialize VanillaTilt if we enter processing or verdict screen
-  if (name === 'processing' && window.VanillaTilt) {
+  // Initialize VanillaTilt — skip on touch devices (no pointer/mouse)
+  if (name === 'processing' && window.VanillaTilt && !isTouchDevice) {
     VanillaTilt.init(document.querySelectorAll(".agent-card"), {
       max: 8,
       speed: 400,
@@ -41,7 +55,7 @@ function showScreen(name) {
       "max-glare": 0.15,
       scale: 1.02
     });
-  } else if (name === 'verdict' && window.VanillaTilt) {
+  } else if (name === 'verdict' && window.VanillaTilt && !isTouchDevice) {
     VanillaTilt.init(document.querySelectorAll(".verdict-card, .suspicion-score-card, .contact-block"), {
       max: 5,
       speed: 400,
